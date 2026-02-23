@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milkman API Client</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .card { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; }
+        button { cursor: pointer; padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; }
+        .row { display: flex; gap: 1rem; margin-bottom: 0.5rem; }
+        input, select { padding: 0.5rem; }
+    </style>
+</head>
+<body>
+    <h1>Milkman API Client</h1>
+    <p>Use this simple client to test your API without Postman.</p>
+
+    <div class="card">
+        <h3>Create Product</h3>
+        <div class="row">
+            <select id="prod-category">
+                <option value="cow">Cow</option>
+                <option value="buffalo">Buffalo</option>
+                <option value="ghee">Ghee</option>
+            </select>
+            <select id="prod-size">
+                <option value="0.5 lit">0.5 Lit</option>
+                <option value="1 lit">1 Lit</option>
+                <option value="2 lit">2 Lit</option>
+            </select>
+            <input type="number" id="prod-price" placeholder="Price" value="60">
+            <button onclick="createProduct()">Create</button>
+        </div>
+        <pre id="prod-result">Result will appear here...</pre>
+    </div>
+
+    <div class="card">
+        <h3>Get All Products</h3>
+        <button onclick="getProducts()">Fetch Products</button>
+        <pre id="list-prods-result">Result will appear here...</pre>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000";
+
+        async function createProduct() {
+            const payload = {
+                category: document.getElementById('prod-category').value,
+                size: document.getElementById('prod-size').value,
+                price: parseFloat(document.getElementById('prod-price').value)
+            };
+            try {
+                const res = await fetch(`${API_URL}/products/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                document.getElementById('prod-result').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('prod-result').textContent = "Error: " + err.message;
+            }
+        }
+
+        async function getProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products/`);
+                const data = await res.json();
+                document.getElementById('list-prods-result').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('list-prods-result').textContent = "Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
